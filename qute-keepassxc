@@ -214,7 +214,7 @@ def select_account(creds):
                 ['rofi', '-dmenu', '-format', 'i', '-matching', 'fuzzy',
                 '-p', 'Search',
                 '-mesg', '<b>qute-keepassxc</b>: select an account, please!'],
-                input=b"\n".join(c['login'].encode('utf-8') for c in creds)
+                input=b"\n".join(f"{c['login']} ({c['name']})".encode('utf-8') for c in creds)
         )
         idx = int(idx)
         if idx < 0:

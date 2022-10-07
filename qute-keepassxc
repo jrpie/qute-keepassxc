@@ -19,6 +19,7 @@ import nacl.public
 def parse_args():
     parser = argparse.ArgumentParser(description="Full passwords from KeepassXC")
     parser.add_argument('url', nargs='?', default=os.environ.get('QUTE_URL'))
+    parser.add_argument('--fake-key', action='store_true', help="Type password instead of searching for form automatically")
     parser.add_argument('--socket', '-s', default='/run/user/{}/org.keepassxc.KeePassXC.BrowserServer'.format(os.getuid()),
                         help='Path to KeepassXC browser socket')
     parser.add_argument('--key', '-k', default='alice@example.com',
@@ -308,8 +309,15 @@ def main():
             error('No credentials selected')
             return
         name, pw = cred['login'], cred['password']
-        if name and pw:
-            qute('jseval -q ' + make_js_code(name, pw))
+        if args.fake_key:
+            for c in name:
+                qute('fake-key ' + c)
+            qute('fake-key <tab>')
+            for c in pw:
+                qute('fake-key ' + c)
+        else:
+            if name and pw:
+                qute('jseval -q ' + make_js_code(name, pw))
     except Exception as e:
         error(str(e))
 
